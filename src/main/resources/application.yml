@@ -5,7 +5,7 @@ logging:
         wdog: debug
 spring:
   datasource:
-    url: jdbc:mysql://139.224.14.200:3306/test1?useUnicode=yes&characterEncoding=UTF8
+    url: jdbc:mysql://139.224.14.200:3306/background?useSSL=false&useUnicode=yes&characterEncoding=UTF8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -30,3 +30,40 @@ server:
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
     min-response-size: 1024
   port: 1000
+
+
+
+
+
+#app:
+#  id: my-background
+#  apollometa: http://config-service-url
+#  apollo:
+#    bootstrap:
+#      enabled: true
+#    eagerLoad:
+#      enabled: true
+#
+## web port
+#server:
+#  port: 8081
+#
+## log config
+#logging:
+#  config: classpath:logback.xml
+#
+#
+## xxl-conf
+#xxl:
+#  conf:
+#    admin:
+#      address: http://localhost:8080/xxl-conf-admin
+#    env: test
+#    access:
+#      token:
+#    mirrorfile: /data/applogs/xxl-conf/xxl-conf-mirror-sample.properties
+#
+## for test
+#test:
+#  conf: #{T(com.xxl.conf.core.XxlConfClient).get('default.key02')}
+
