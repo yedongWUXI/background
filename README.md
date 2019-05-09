@@ -50,6 +50,10 @@ spring:
     
     运行`WatchDogApplication.java`，默认端口为1000
     
+    
+- 配置中心地址
+http://139.224.14.200:1002/xxl-conf-admin/conf
+    
 
 
     

@@ -20,7 +20,6 @@ public class SysUser implements Serializable  {
     @TableId
     private String id;
     private String username;
-    private String number;
     private Integer age;
     private String password;
     private Integer status;

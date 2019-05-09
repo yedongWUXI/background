@@ -16,7 +16,6 @@ public class SysUserVO {
 
     private String id;
     private String username;
-    private String number;
     private Integer age;
     private Integer status;
     private List<SysRole> roles;
