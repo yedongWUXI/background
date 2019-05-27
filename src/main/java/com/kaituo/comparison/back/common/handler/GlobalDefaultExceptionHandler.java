@@ -17,7 +17,7 @@ import java.util.List;
  *
  *
  */
-@ControllerAdvice(basePackages = {"cn.licoy.wdog"})
+@ControllerAdvice(basePackages = {"com.kaituo.comparison.back"})
 @Log4j
 public class GlobalDefaultExceptionHandler {
 

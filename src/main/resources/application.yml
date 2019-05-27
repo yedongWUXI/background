@@ -1,8 +1,6 @@
 logging:
   level:
-    cn:
-      licoy:
-        wdog: debug
+    com.kaituo.comparison.back: debug
 spring:
   datasource:
     url: jdbc:mysql://139.224.14.200:3306/background?useSSL=false&useUnicode=yes&characterEncoding=UTF8

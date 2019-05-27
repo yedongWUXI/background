@@ -41,7 +41,7 @@ js-md5 | js-md5库 | 0.7.3 | [https://github.com/emn178/js-md5](https://github.c
 # application.yml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/wdog?useUnicode=yes&characterEncoding=UTF8
+    url: jdbc:mysql://localhost:3306/background?useUnicode=yes&characterEncoding=UTF8
     password: root
     username: root
     driver-class-name: com.mysql.jdbc.Driver
