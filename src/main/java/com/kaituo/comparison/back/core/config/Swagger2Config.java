@@ -27,9 +27,15 @@ public class Swagger2Config {
                 .build();
     }
     private ApiInfo apiInfo() {
+        StringBuilder description = new StringBuilder();
+        description.append("查看json格式:<a target='_blank' href='./v2/api-docs'>api-docs</a> <br>")
+                .append("接口文档下载:<a href='./swagger/markdown'>markdown</a>  ")
+                .append("<a href='./swagger/confluence'>confluence</a>  ")
+                .append("<a href='./swagger/html'>html</a> ")
+                .append("<a href='./swagger/json'>json</a> ");
         return new ApiInfoBuilder()
-                .title("实时比对后台管理 API文档")
-                .description("实时比对后台管理 API文档")
+                .title("后台管理 API文档")
+                .description(description.toString())
                 .version("1.0")
                 .build();
     }
