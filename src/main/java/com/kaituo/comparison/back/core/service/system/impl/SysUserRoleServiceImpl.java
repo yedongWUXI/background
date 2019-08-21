@@ -1,9 +1,9 @@
 package com.kaituo.comparison.back.core.service.system.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaituo.comparison.back.core.entity.system.SysUserRole;
 import com.kaituo.comparison.back.core.mapper.system.SysUserRoleMapper;
 import com.kaituo.comparison.back.core.service.system.SysUserRoleService;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,8 +1,8 @@
 package com.kaituo.comparison.back.core.service.system.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaituo.comparison.back.common.exception.RequestException;
 import com.kaituo.comparison.back.core.dto.system.role.FindRoleDTO;
 import com.kaituo.comparison.back.core.dto.system.role.RoleAddDTO;
@@ -40,10 +40,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public List<SysRole> findAllRoleByUserId(String uid,Boolean hasResource) {
-        List<SysUserRole> userRoles = userRoleService.selectList(new EntityWrapper<SysUserRole>().eq("uid", uid));
+        List<SysUserRole> userRoles = userRoleService.list(new QueryWrapper<SysUserRole>().eq("uid", uid));
         List<SysRole> roles = new ArrayList<>();
         userRoles.forEach(v->{
-            SysRole role = this.selectById(v.getRid());
+            SysRole role = this.getById(v.getRid());
             if(role!=null){
                 if(hasResource){
                     List<SysResource> permissions = roleResourceService.findAllResourceByRoleId(role.getId());
@@ -57,9 +57,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public Page<SysRole> list(FindRoleDTO findRoleDTO) {
-        EntityWrapper<SysRole> wrapper = new EntityWrapper<>();
-        wrapper.orderBy("id",findRoleDTO.getAsc());
-        Page<SysRole> rolePage = this.selectPage(new Page<>(findRoleDTO.getPage(),
+        QueryWrapper<SysRole> wrapper = new QueryWrapper<>();
+        wrapper.orderBy(true, findRoleDTO.getAsc(), "id");
+        Page<SysRole> rolePage = (Page<SysRole>) this.page(new Page<>(findRoleDTO.getPage(),
                 findRoleDTO.getPageSize()), wrapper);
         if(findRoleDTO.getHasResource()){
             if(rolePage.getRecords()!=null){
@@ -72,10 +72,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public void remove(String rid) {
-        SysRole role = this.selectById(rid);
+        SysRole role = this.getById(rid);
         if(role==null) throw RequestException.fail("角色不存在！");
         try {
-            this.deleteById(rid);
+            this.removeById(rid);
             this.updateCache(role,true,false);
         }catch (DataIntegrityViolationException e){
             throw RequestException.fail(
@@ -87,15 +87,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public void update(String rid, RoleUpdateDTO roleUpdateDTO) {
-        SysRole role = this.selectById(rid);
+        SysRole role = this.getById(rid);
         if(role==null) throw RequestException.fail("角色不存在！");
         BeanUtils.copyProperties(roleUpdateDTO,role);
         try {
             this.updateById(role);
-            roleResourceService.delete(new EntityWrapper<SysRoleResource>()
+            roleResourceService.remove(new QueryWrapper<SysRoleResource>()
                     .eq("rid",rid));
             for (SysResource sysResource : roleUpdateDTO.getResources()) {
-                roleResourceService.insert(SysRoleResource.builder()
+                roleResourceService.save(SysRoleResource.builder()
                         .pid(sysResource.getId())
                         .rid(role.getId())
                         .build());
@@ -109,7 +109,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public void add(RoleAddDTO addDTO) {
-        SysRole role = this.selectOne(new EntityWrapper<SysRole>().eq("name",addDTO.getName()));
+        SysRole role = this.getOne(new QueryWrapper<SysRole>().eq("name", addDTO.getName()));
         if(role!=null){
             throw RequestException.fail(
                     String.format("已经存在名称为 %s 的角色",addDTO.getName()));
@@ -117,9 +117,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
         role = new SysRole();
         BeanUtils.copyProperties(addDTO,role);
         try {
-            this.insert(role);
+            this.save(role);
             for (SysResource sysResource : addDTO.getResources()) {
-                roleResourceService.insert(SysRoleResource.builder()
+                roleResourceService.save(SysRoleResource.builder()
                         .pid(sysResource.getId())
                         .rid(role.getId())
                         .build());
@@ -131,7 +131,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> imple
 
     @Override
     public void updateCache(SysRole role,Boolean author, Boolean out) {
-        List<SysUserRole> sysUserRoles = userRoleService.selectList(new EntityWrapper<SysUserRole>()
+        List<SysUserRole> sysUserRoles = userRoleService.list(new QueryWrapper<SysUserRole>()
                 .eq("rid", role.getId())
                 .groupBy("uid"));
         List<String> userIdList = new ArrayList<>();

@@ -1,11 +1,11 @@
 package com.kaituo.comparison.back.core.service.system;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.kaituo.comparison.back.common.service.BaseService;
 import com.kaituo.comparison.back.core.dto.system.role.FindRoleDTO;
 import com.kaituo.comparison.back.core.dto.system.role.RoleAddDTO;
 import com.kaituo.comparison.back.core.dto.system.role.RoleUpdateDTO;
 import com.kaituo.comparison.back.core.entity.system.SysRole;
-import com.baomidou.mybatisplus.service.IService;
 
 import java.util.List;
 

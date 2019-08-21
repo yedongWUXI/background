@@ -1,16 +1,15 @@
 package com.kaituo.comparison.back.core.service.system.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaituo.comparison.back.core.entity.system.SysResource;
 import com.kaituo.comparison.back.core.entity.system.SysRoleResource;
 import com.kaituo.comparison.back.core.mapper.system.SysRolePermissionMapper;
 import com.kaituo.comparison.back.core.service.system.SysResourceService;
 import com.kaituo.comparison.back.core.service.system.SysRoleResourceService;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +28,16 @@ public class SysRoleResourceServiceImpl extends ServiceImpl<SysRolePermissionMap
 
     @Override
     public List<SysResource> findAllResourceByRoleId(String rid) {
-        List<SysRoleResource> rps = this.selectList(new EntityWrapper<SysRoleResource>().eq("rid",rid));
+        List<SysRoleResource> rps = this.list(new QueryWrapper<SysRoleResource>().eq("rid", rid));
         if(rps!=null){
             List<String> pids = new ArrayList<>();
             rps.forEach(v->pids.add(v.getPid()));
             if(pids.size()==0){
                 return null;
             }
-            return resourceService.selectList(new EntityWrapper<SysResource>()
+            return resourceService.list(new QueryWrapper<SysResource>()
                     .in("id", pids)
-                    .orderBy("sort",true)
+                    .orderBy(true, true, "sort")
             );
         }
         return null;

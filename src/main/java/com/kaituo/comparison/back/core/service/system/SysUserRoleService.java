@@ -1,7 +1,7 @@
 package com.kaituo.comparison.back.core.service.system;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.kaituo.comparison.back.core.entity.system.SysUserRole;
-import com.baomidou.mybatisplus.service.IService;
 
 /**
  *

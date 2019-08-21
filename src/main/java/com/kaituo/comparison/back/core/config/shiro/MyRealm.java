@@ -1,13 +1,12 @@
 package com.kaituo.comparison.back.core.config.shiro;
 
 
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kaituo.comparison.back.common.exception.RequestException;
 import com.kaituo.comparison.back.common.util.JwtUtil;
 import com.kaituo.comparison.back.core.config.jwt.JwtToken;
 import com.kaituo.comparison.back.core.entity.system.SysUser;
 import com.kaituo.comparison.back.core.service.system.SysUserService;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -18,7 +17,6 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 import java.util.List;
 
@@ -73,9 +71,9 @@ public class MyRealm extends AuthorizingRealm {
         SysUser user;
         String username = token.getUsername()!=null ? token.getUsername() : JwtUtil.getUsername(token.getToken());
         try {
-            user = userService.selectOne(new EntityWrapper<SysUser>()
-                    .eq("username",username)
-                    .setSqlSelect("id,username,status,password"));
+            user = userService.getOne(new QueryWrapper<SysUser>()
+                    .eq("username", username))
+            ;
         }catch (RequestException e){
             throw new DisabledAccountException(e.getMsg());
         }

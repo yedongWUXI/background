@@ -25,7 +25,7 @@ public class RoleServiceImplTest {
     @Test
     public void test(){
         SysRole role = SysRole.builder().name("1").build();
-        roleService.insert(role);
+        roleService.save(role);
     }
 
 }

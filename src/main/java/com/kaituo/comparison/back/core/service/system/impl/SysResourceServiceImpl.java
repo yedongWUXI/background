@@ -1,18 +1,17 @@
 package com.kaituo.comparison.back.core.service.system.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaituo.comparison.back.common.exception.RequestException;
 import com.kaituo.comparison.back.core.dto.system.resource.ResourceDTO;
 import com.kaituo.comparison.back.core.entity.system.SysResource;
 import com.kaituo.comparison.back.core.mapper.system.SysResourceMapper;
 import com.kaituo.comparison.back.core.service.global.ShiroService;
 import com.kaituo.comparison.back.core.service.system.SysResourceService;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,12 +32,12 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper,SysRes
 
     @Override
     public List<SysResource> list() {
-        EntityWrapper<SysResource> wrapper = new EntityWrapper<>();
+        QueryWrapper<SysResource> wrapper = new QueryWrapper<>();
         wrapper.eq("parent_id",0)
                 .or()
                 .isNull("parent_id")
-                .orderBy("sort");
-        List<SysResource> resources = this.selectList(wrapper);
+                .orderBy(true, true, "sort");
+        List<SysResource> resources = this.list(wrapper);
         if(resources!=null && resources.size()>0){
             resources.forEach(this::findAllChild);
         }
@@ -50,13 +49,13 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper,SysRes
         SysResource resource = new SysResource();
         BeanUtils.copyProperties(dto,resource);
         resource.setCreateDate(new Date());
-        this.insert(resource);
+        this.save(resource);
         shiroService.reloadPerms();
     }
 
     @Override
     public void update(String id, ResourceDTO dto) {
-        SysResource resource = this.selectById(id);
+        SysResource resource = this.getById(id);
         if(resource==null)
             throw RequestException.fail("更新失败，不存在ID为"+id+"的资源");
         BeanUtils.copyProperties(dto,resource);
@@ -66,18 +65,18 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper,SysRes
 
     @Override
     public void remove(String id) {
-        SysResource resource = this.selectOne(new EntityWrapper<SysResource>()
-                .eq("id",id).setSqlSelect("id"));
+        SysResource resource = this.getOne(new QueryWrapper<SysResource>()
+                .eq("id", id));
         if(resource==null)
             throw RequestException.fail("删除失败，不存在ID为"+id+"的资源");
-        this.deleteById(id);
+        this.removeById(id);
         shiroService.reloadPerms();
     }
 
     public void findAllChild(SysResource resource){
-        EntityWrapper<SysResource> wrapper = new EntityWrapper<>();
-        wrapper.eq("parent_id",resource.getId()).orderBy("sort");
-        List<SysResource> resources = this.selectList(wrapper);
+        QueryWrapper<SysResource> wrapper = new QueryWrapper<>();
+        wrapper.eq("parent_id", resource.getId()).orderBy(true, true, "sort");
+        List<SysResource> resources = this.list(wrapper);
         resource.setChildren(resources);
         if(resources!=null && resources.size()>0){
             resources.forEach(this::findAllChild);
@@ -96,7 +95,7 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper,SysRes
                 if(cacheParent!=null){
                     parent = cacheParent;
                 }else{
-                    parent = this.selectById(resource.getParentId());
+                    parent = this.getById(resource.getParentId());
                 }
             }
             if(parent!=null){

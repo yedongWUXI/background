@@ -1,6 +1,6 @@
 package com.kaituo.comparison.back.core.entity.system;
 
-import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;

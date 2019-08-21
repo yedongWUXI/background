@@ -1,6 +1,9 @@
 package com.kaituo.comparison.back.core.service.system.impl;
 
 import cn.licoy.encryptbody.util.MD5EncryptUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaituo.comparison.back.common.bean.ResponseCode;
 import com.kaituo.comparison.back.common.exception.RequestException;
 import com.kaituo.comparison.back.common.util.Tools;
@@ -21,9 +24,6 @@ import com.kaituo.comparison.back.core.service.system.SysRoleService;
 import com.kaituo.comparison.back.core.service.system.SysUserRoleService;
 import com.kaituo.comparison.back.core.service.system.SysUserService;
 import com.kaituo.comparison.back.core.vo.system.SysUserVO;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.subject.Subject;
@@ -31,7 +31,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +54,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public SysUser findUserByName(String name,boolean hasResource) {
-        SysUser user = this.selectOne(new EntityWrapper<SysUser>().eq("username",name));
+        SysUser user = this.getOne(new QueryWrapper<SysUser>().eq("username", name));
         if(user == null){
             return null;
         }
@@ -65,7 +64,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public SysUser findUserById(String id,boolean hasResource) {
-        SysUser user = this.selectById(id);
+        SysUser user = this.getById(id);
         if(user == null){
             return null;
         }
@@ -130,9 +129,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
             throw RequestException.fail("用户信息获取失败");
         }
         BeanUtils.copyProperties(principal,jwtToken);
-        SysUser user = this.selectOne(new EntityWrapper<SysUser>()
-                .eq("username",jwtToken.getUsername())
-                .setSqlSelect("id"));
+        SysUser user = this.getOne(new QueryWrapper<SysUser>()
+                .eq("username", jwtToken.getUsername()));
         if(user==null){
             throw RequestException.fail("用户不存在");
         }
@@ -171,9 +169,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public Page<SysUserVO> getAllUserBySplitPage(FindUserDTO findUserDTO) {
-        EntityWrapper<SysUser> wrapper = new EntityWrapper<>();
-        wrapper.orderBy("create_date",findUserDTO.getAsc());
-        Page<SysUser> userPage = this.selectPage(new Page<>(findUserDTO.getPage(),
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.orderBy(true, findUserDTO.getAsc(), "create_date");
+        Page<SysUser> userPage = (Page<SysUser>) this.page(new Page<>(findUserDTO.getPage(),
                 findUserDTO.getPageSize()), wrapper);
         Page<SysUserVO> userVOPage = new Page<>();
         BeanUtils.copyProperties(userPage,userVOPage);
@@ -191,7 +189,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public void statusChange(String userId, Integer status) {
-        SysUser user = this.selectById(userId);
+        SysUser user = this.getById(userId);
         if(user==null){
             throw RequestException.fail("用户不存在");
         }
@@ -215,7 +213,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public void removeUser(String userId) {
-        SysUser user = this.selectById(userId);
+        SysUser user = this.getById(userId);
         if(user==null){
             throw RequestException.fail("用户不存在！");
         }
@@ -225,7 +223,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
             throw RequestException.fail("不能删除自己的账户！");
         }
         try {
-            this.deleteById(userId);
+            this.removeById(userId);
             shiroService.clearAuthByUserId(userId,true,true);
         }catch (Exception e){
             throw RequestException.fail("删除失败",e);
@@ -244,7 +242,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
             BeanUtils.copyProperties(addDTO,findUser);
             findUser.setCreateDate(new Date());
             findUser.setPassword(MD5EncryptUtil.encrypt(String.valueOf(findUser.getPassword())+findUser.getUsername()));
-            this.insert(findUser);
+            this.save(findUser);
             this.updateUserRole(findUser);
         }catch (Exception e){
             throw RequestException.fail("添加用户失败",e);
@@ -253,12 +251,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public void update(String id, UserUpdateDTO updateDTO) {
-        SysUser user = this.selectById(id);
+        SysUser user = this.getById(id);
         if(user==null){
             throw RequestException.fail(
                     String.format("更新失败，不存在ID为 %s 的用户",id));
         }
-        SysUser findUser = this.selectOne(new EntityWrapper<SysUser>()
+        SysUser findUser = this.getOne(new QueryWrapper<SysUser>()
                     .eq("username",updateDTO.getUsername()).ne("id",id));
         if(findUser!=null){
             throw RequestException.fail(
@@ -279,9 +277,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
     @Override
     public void updateUserRole(SysUser user) {
         try {
-            userRoleService.delete(new EntityWrapper<SysUserRole>().eq("uid",user.getId()));
+            userRoleService.remove(new QueryWrapper<SysUserRole>().eq("uid", user.getId()));
             if(user.getRoles()!=null && user.getRoles().size()>0){
-                user.getRoles().forEach(v-> userRoleService.insert(SysUserRole.builder()
+                user.getRoles().forEach(v -> userRoleService.save(SysUserRole.builder()
                         .uid(user.getId())
                         .rid(v.getId()).build()));
             }
@@ -292,7 +290,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper,SysUser> imple
 
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO){
-        SysUser user = this.selectById(resetPasswordDTO.getUid().trim());
+        SysUser user = this.getById(resetPasswordDTO.getUid().trim());
         if(user==null){
             throw RequestException.fail(String.format("不存在ID为 %s 的用户",resetPasswordDTO.getUid()));
         }

@@ -1,5 +1,6 @@
 package com.kaituo.comparison.back.common.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.kaituo.comparison.back.common.annotation.SysLogs;
 import com.kaituo.comparison.back.common.util.Tools;
 import com.kaituo.comparison.back.core.config.jwt.JwtToken;
@@ -8,7 +9,6 @@ import com.kaituo.comparison.back.core.dto.system.user.ResetPasswordDTO;
 import com.kaituo.comparison.back.core.dto.system.user.UserAddDTO;
 import com.kaituo.comparison.back.core.entity.system.SysLog;
 import com.kaituo.comparison.back.core.service.system.SysLogService;
-import com.alibaba.fastjson.JSON;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -80,7 +79,7 @@ public class SysLogAspect {
             sysLog.setUid("0");
         }
         sysLog.setCreateDate(new Date());
-        sysLogService.insert(sysLog);
+        sysLogService.save(sysLog);
     }
 
     private String getMethodSysLogsAnnotationValue(JoinPoint joinPoint){
