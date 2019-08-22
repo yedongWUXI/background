@@ -1,9 +1,9 @@
 package com.kaituo.comparison.back.common.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaituo.comparison.back.common.bean.ResponseCode;
 import com.kaituo.comparison.back.common.bean.ResponseResult;
 import com.kaituo.comparison.back.common.service.QueryService;
-import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
