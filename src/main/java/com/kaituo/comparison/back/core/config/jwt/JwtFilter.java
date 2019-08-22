@@ -1,10 +1,10 @@
 package com.kaituo.comparison.back.core.config.jwt;
 
-import com.kaituo.comparison.back.common.bean.ResponseResult;
+import com.alibaba.fastjson.JSON;
 import com.kaituo.comparison.back.common.bean.ResponseCode;
+import com.kaituo.comparison.back.common.bean.ResponseResult;
 import com.kaituo.comparison.back.common.exception.RequestException;
 import com.kaituo.comparison.back.common.util.Tools;
-import com.alibaba.fastjson.JSON;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -69,7 +69,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         if (null == subject.getPrincipal()) {//表示没有登录，返回登录提示
             writerResponse(res,ResponseCode.NOT_SING_IN.code,ResponseCode.NOT_SING_IN.msg);
         }else{
-            writerResponse(res,ResponseCode.FAIL.code,"无权限访问");
+//            writerResponse(res,ResponseCode.FAIL.code,"无权限访问");
+            return true;
         }
         return false;
     }

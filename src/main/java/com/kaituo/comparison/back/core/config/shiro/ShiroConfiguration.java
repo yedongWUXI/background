@@ -18,7 +18,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,27 +43,43 @@ public class ShiroConfiguration {
         //拦截器
         //<!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 -->:这是一个坑呢，一不小心代码就不好使了;
         //<!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
-        Map<String,String> filterChainDefinitionMap = shiroService.getFilterChainDefinitionMap();
+
+        //初始化数据库配置的权限
+//        Map<String,String> filterChainDefinitionMap = shiroService.getFilterChainDefinitionMap();
+
+        //代码配置化权限
+        Map<String, String> filterChainDefinitionMap = new HashMap<>();
+        filterChainDefinitionMap.clear();
+
+        filterChainDefinitionMap.put("/swagger/**", "anon");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+        filterChainDefinitionMap.put("/v2/api-docs", "anon");
+        filterChainDefinitionMap.put("/swagger-ui.html", "anon");
+        filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+        filterChainDefinitionMap.put("/account/**", "anon");
+
+        filterChainDefinitionMap.put("/**", "jwt");
 
         //过滤器
-        Map<String,Filter> filters = new HashMap<>();
-        filters.put("perms",new JwtFilter());
+        Map<String, Filter> filters = new HashMap<>();
+//        filters.put("perms",new JwtFilter());
+        filters.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filters);
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
 
     @Bean
-    public MyRealm myRealm(){
+    public MyRealm myRealm() {
         MyRealm myRealm = new MyRealm();
         myRealm.setCredentialsMatcher(new CredentialsMatcher());
-        myRealm.setAuthorizationCacheName(MyRealm.class.getName()+".authorizationCache");
+        myRealm.setAuthorizationCacheName(MyRealm.class.getName() + ".authorizationCache");
         return myRealm;
     }
 
     @Bean
-    public SecurityManager securityManager(RedisCacheManager RedisCacheManager){
-        DefaultWebSecurityManager manager =  new DefaultWebSecurityManager();
+    public SecurityManager securityManager(RedisCacheManager RedisCacheManager) {
+        DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         manager.setRealm(myRealm());
         manager.setCacheManager(RedisCacheManager);
         /*
@@ -72,7 +87,7 @@ public class ShiroConfiguration {
         * 但它没有完全地禁用Session所以需要配合SubjectFactory中的context.setSessionCreationEnabled(false)
         */
         //manager.setSessionManager(sessionManager());
-        ((DefaultSessionStorageEvaluator) ((DefaultSubjectDAO)manager.getSubjectDAO())
+        ((DefaultSessionStorageEvaluator) ((DefaultSubjectDAO) manager.getSubjectDAO())
                 .getSessionStorageEvaluator()).setSessionStorageEnabled(false);
         manager.setSubjectFactory(new AgileSubjectFactory());
         return manager;
@@ -97,7 +112,7 @@ public class ShiroConfiguration {
     }
 
     @Bean
-    public MethodInvokingFactoryBean methodInvokingFactoryBean(SecurityManager securityManager){
+    public MethodInvokingFactoryBean methodInvokingFactoryBean(SecurityManager securityManager) {
         MethodInvokingFactoryBean bean = new MethodInvokingFactoryBean();
         bean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
         bean.setArguments(securityManager);
@@ -106,7 +121,7 @@ public class ShiroConfiguration {
 
     @ConfigurationProperties(prefix = "spring.redis")
     @Bean("shiroRedisManager")
-    public RedisManager redisManager(){
+    public RedisManager redisManager() {
         return new RedisManager();
     }
 

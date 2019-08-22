@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -66,7 +68,8 @@ public class ShiroServiceImpl implements ShiroService {
             filterChainDefinitionMap.put(strings[0],strings[1]);
         }
 
-        filterChainDefinitionMap.put("/**", "anon");
+//        filterChainDefinitionMap.put("/**", "anon");
+
 
         return filterChainDefinitionMap;
     }
