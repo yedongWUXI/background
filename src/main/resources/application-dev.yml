@@ -1,27 +1,70 @@
 logging:
   level:
     com.kaituo.comparison.back: debug
+
 spring:
   datasource:
-    url: jdbc:mysql://139.224.14.200:3306/background?useSSL=false&useUnicode=yes&characterEncoding=UTF8
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
-    hikari:
-      max-lifetime: 60000
-      maximum-pool-size: 15
-  redis:
-    host: localhost
-    port: 6379
-#    password: 123456
-    timeout: 10000
-    pool:
-      max-active: 10
-      min-idle: 3
-      max-idle: 5
+    dynamic:
+      primary: background
+      datasource:
+        background:
+          username: root
+          password: 123456
+          url: jdbc:mysql://139.224.14.200:3306/background?useSSL=false&useUnicode=yes&characterEncoding=UTF8
+          driver-class-name: com.mysql.jdbc.Driver
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
+
+        study:
+          username: root
+          password: 123456
+          url: jdbc:mysql://139.224.14.200:3306/study?useUnicode=true&characterEncoding=utf-8
+          driver-class-name: com.mysql.jdbc.Driver
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
+#          schema: db/schema.sql
+        student1:
+          username: root
+          password: 123456
+          url: jdbc:mysql://139.224.14.200:3306/student1?useUnicode=true&characterEncoding=utf-8
+          driver-class-name: com.mysql.jdbc.Driver
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
+        student2:
+          username: root
+          password: 123456
+          url: jdbc:mysql://139.224.14.200:3306/student2?useUnicode=true&characterEncoding=utf-8
+          driver-class-name: com.mysql.jdbc.Driver
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
   aop:
     proxy-target-class: true
     auto: true
+#spring:
+#  datasource:
+#    url: jdbc:mysql://139.224.14.200:3306/background?useSSL=false&useUnicode=yes&characterEncoding=UTF8
+#    username: root
+#    password: 123456
+#    driver-class-name: com.mysql.jdbc.Driver
+#    hikari:
+#      max-lifetime: 60000
+#      maximum-pool-size: 15
+#  redis:
+#    host: localhost
+#    port: 6379
+##    password: 123456
+#    timeout: 10000
+#    pool:
+#      max-active: 10
+#      min-idle: 3
+#      max-idle: 5
+#  aop:
+#    proxy-target-class: true
+#    auto: true
 server:
   compression:
     enabled: true
