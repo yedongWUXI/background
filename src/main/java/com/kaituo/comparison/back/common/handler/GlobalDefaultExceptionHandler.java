@@ -33,12 +33,14 @@ public class GlobalDefaultExceptionHandler {
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     @ResponseBody
     public ResponseResult requestExceptionHandler(DataIntegrityViolationException e){
+        e.printStackTrace();
         return ResponseResult.builder().msg("数据操作格式异常").status(ResponseCode.FAIL.code).build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ResponseResult methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e){
+        e.printStackTrace();
         BindingResult result = e.getBindingResult();
         String s = "参数验证失败";
         if(result.hasErrors()){
