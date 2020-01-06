@@ -3,13 +3,7 @@
 
     <contextName>logback</contextName>
 
-    <springProfile name="dev">
-        <property name="log.path" value="C:\\opt\\data\\applogs\\background"/>
-    </springProfile>
-    <springProfile name="test">
-        <property name="log.path" value="C:\\opt\\data\\applogs\\background_test"/>
-    </springProfile>
-
+    <property name="log.path" value="C:\\opt\\data\\applogs\\background"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <!-- <filter class="ch.qos.logback.classic.filter.ThresholdFilter" >
