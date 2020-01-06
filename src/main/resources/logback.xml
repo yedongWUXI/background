@@ -7,7 +7,7 @@
         <property name="log.path" value="C:\\opt\\data\\applogs\\background"/>
     </springProfile>
     <springProfile name="test">
-        <property name="log.path" value="C:\\opt\\data\\applogs\\background5"/>
+        <property name="log.path" value="C:\\opt\\data\\applogs\\background_test"/>
     </springProfile>
 
 
